@@ -1,0 +1,56 @@
+SET NAMES utf8;
+
+#
+# Create tables
+#
+
+USE {{db_name}};
+
+# порядок важен из-за вторичных ключей
+DROP TABLE IF EXISTS `Contact`;
+DROP TABLE IF EXISTS `Message`;
+DROP TABLE IF EXISTS `User`;
+
+#
+# Structure for table "User"
+#
+
+CREATE TABLE `User` (
+  `user_id` bigint(20) NOT NULL,
+  `login` varchar(50) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#
+# Structure for table "Contact"
+#
+
+CREATE TABLE `Contact` (
+  `contact_id` bigint(20) NOT NULL,
+  `from_user_id` bigint(20) NOT NULL,
+  `to_user_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`contact_id`),
+  KEY `from_user_id` (`from_user_id`),
+  KEY `to_user_id` (`to_user_id`),
+  CONSTRAINT `FK_CONTACT_FROM_USER` FOREIGN KEY (`from_user_id`) REFERENCES `User` (`user_id`),
+  CONSTRAINT `FK_CONTACT_TO_USER` FOREIGN KEY (`to_user_id`) REFERENCES `User` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#
+# Structure for table "Message"
+#
+
+CREATE TABLE `Message` (
+  `message_id` bigint(20) NOT NULL,
+  `from_user_id` bigint(20) NOT NULL,
+  `to_user_id` bigint(20) NOT NULL,
+  #`text_message` text,
+  #`send_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`message_id`),
+  KEY `from_user_id` (`from_user_id`),
+  KEY `to_user_id` (`to_user_id`),
+  CONSTRAINT `FK_MESSAGE_FROM_USER` FOREIGN KEY (`from_user_id`) REFERENCES `User` (`user_id`),
+  CONSTRAINT `FK_MESSAGE_TO_USER` FOREIGN KEY (`to_user_id`) REFERENCES `User` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

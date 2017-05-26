@@ -1,0 +1,159 @@
+---
+#
+# Добавляем пользователя :
+#   [ doneathome ]
+#
+# Устанавливаем :
+#   tomcat 8
+#   openjdk-8-jre
+#
+#   mysql
+#
+#
+# пример запуска
+# [ ansible-playbook preinstal.yaml --extra-vars "target=192.168.56.11 remote_user=dzhukov" --ask-sudo-pass ]
+#
+#
+# (*) чтобы подключиться к [ mysql ] с другого ПК: [ mysql -h 192.168.56.11 -P 3306 -u mysql -p ]
+#     - отключаем фаервол [ sudo ufw disable ]
+#     - редактируем [ /etc/mysql/mysql.conf.d/mysqld.cnf ]
+#       [ bind-address            = 0.0.0.0 ]
+#     - проверяем пользователя
+#       [ SELECT User, Host, authentication_string FROM user; ]
+#
+#
+#
+
+
+
+- hosts: '{{target}}'
+  remote_user: '{{remote_user}}'
+  sudo: yes
+
+  vars:
+    sw_user       : doneathome
+    sw_group      : doneathome
+    # python -c 'import crypt; print crypt.crypt("doneathome", "$1$SomeSalt$")'
+    sw_pass       : $1$SomeSalt$x8ibdyI4rgXWFADZUdFYA0
+
+    db_name       : experiense
+    db_user       : doneathome
+    # https://www.browserling.com/tools/mysql-password
+    db_pass       : "*585FB28CC24859155CFC19B30FD51EC3F8E31BCA"
+    db_host       : localhost
+    db_port       : 3306
+    db_root_user  : root
+    db_root_pass  :
+
+    local_dir            : ./
+    remote_dir           : /u01/experience
+    local_dist           : "{{local_dir}}/distrib"
+
+
+    script_name                : doneathome-experience
+    scripts_local_dir          : bin
+    scripts_distrib            : '../{{scripts_local_dir}}/{{script_name}}'
+    scripts_remote_dir         : '{{remote_dir}}/{{scripts_local_dir}}'
+
+
+
+    tomcat_distrib_name    : apache-tomcat-8.5.15
+    tomcat_local_dir       : tomcat
+    tomcat_distrib         : '{{local_dist}}/{{tomcat_local_dir}}/{{tomcat_distrib_name}}.tar.gz'
+    tomcat_remote_dir      : '{{remote_dir}}/{{tomcat_local_dir}}'
+
+
+  tasks:
+
+    # удалим файлы проекта
+    - name: remove all in dir u01/experience
+      file:
+        state: absent
+        path: "{{remote_dir}}/"
+
+    # удалим файл service
+    - name: remove service file
+      file:
+        state: absent
+        path: "/etc/init.d/{{script_name}}"
+
+    # удалям процесс порожденный tomcat
+    # - name: remove proces
+    #   command: "ps -aux | grep {{tomcat_remote_dir}}/bin | awk '{kill -15 $2}'"
+
+
+
+
+    # добавим пользователя и дадим ему [ sudo ]
+    - name: create user
+      group: name={{sw_group}} state=present
+    - user: name={{sw_user}} state=present group={{sw_group}} password={{sw_pass}}
+    - lineinfile: dest=/etc/sudoers line="{{sw_user}}       ALL=(ALL)       NOPASSWD:ALL"
+
+    # удалим файлы проекта
+    - name: remove all in dir u01/experience
+      file:
+        state: absent
+        path: "{{remote_dir}}/"
+
+    # сделаем директорию для нашего проекта
+    - name: create main dir
+      file: path={{remote_dir}} state=directory
+
+    # устанавливаем [ openjdk-8-jre ]
+    - name: install openjdk-8-jre
+      apt:
+        name: openjdk-8-jre
+        state: latest
+
+    # устанавливаем [ mysql-server ]
+    - name: install mysql-server
+      apt:
+        name: mysql-server
+        state: latest
+
+    # устанавливаем [ python-mysqldb ] (*) не работало добавление пользователя для БД
+    - name: install python mysql bindings
+      apt:
+        name: python-mysqldb
+        state: latest
+
+
+    # добавляем пользователя
+    - mysql_user:
+        name: "{{db_user}}"
+        password: "{{db_pass}}"
+        priv: '*.*:ALL'
+        host: '%'
+        encrypted: yes
+        state: present
+
+    # отправляем два файла и запускаем их, потом удаляем
+    # (*) файлы обрабатываются шаблонизатором для вставки значений из окружения
+    # (*) заметь на выполнение из [ shell ]
+    - name: DB - create database
+      template: src=../db/scripts/create_db.sql.j2       dest=/tmp/create_db.sql
+    - template: src=../db/scripts/create_tables.sql.j2   dest=/tmp/create_tables.sql
+    - shell: "mysql -u {{db_root_user}} --password={{db_root_pass}} < /tmp/create_db.sql"
+    - shell: "mysql -u {{db_root_user}} --password={{db_root_pass}} < /tmp/create_tables.sql"
+    - command: "rm /tmp/create_db.sql"
+    - command: "rm /tmp/create_tables.sql"
+
+    # устанавливаем [ tomcat ] + ( создадим папочку tomcat )
+    - name: tomcat install
+      copy: src={{tomcat_distrib}} dest=/tmp/tomcat.tgz
+    - unarchive: src=/tmp/tomcat.tgz dest={{remote_dir}} copy=no owner={{sw_user}} group={{sw_group}}
+    - command: "mv {{remote_dir}}/{{tomcat_distrib_name}} {{remote_dir}}/{{tomcat_local_dir}}"
+
+    # добавляем сервис
+    - name: add service
+      copy: src={{scripts_distrib}} dest=/etc/init.d/{{script_name}} owner={{sw_user}} group={{sw_group}} mode="0755"
+    - command: "update-rc.d {{script_name}} defaults"
+
+    - name: Start Searchwiz Coordinator Agent
+      command: "/etc/init.d/{{script_name}} start"
+
+    - pause: seconds=1
+
+
+
