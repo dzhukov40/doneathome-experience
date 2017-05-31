@@ -28,8 +28,9 @@ public class JdbcConfig {
     private Environment env;
 
     /**
-     * Благодаря этому бину мы получаем соединение с базой
-     * и можем выполнять запросы.
+     * Это бин использующий определенную реализацию JDBC и минимально
+     * достаточный набор параметров для подключения к базе данных.
+     * @return обЪект соединения с базой
      */
     @Bean
     public DataSource getDataSource() {
@@ -44,7 +45,7 @@ public class JdbcConfig {
     /**
      * Это наспройки вынесенные в отдельный метод для удобства конфигурации
      * бина [LocalSessionFactoryBean]
-     * @return
+     * @return настройки Hibernate
      */
     private Properties getHibernateProperties() {
         Properties properties = new Properties();

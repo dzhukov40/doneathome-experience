@@ -130,9 +130,9 @@
                 <version>2.2</version>
                 <configuration>
                     <url>http://192.168.56.11:8080/manager/text</url>
-                    <username>tomcat</username>
-                    <password>tomcat</password>
-                    <path>/myapp</path>
+                    <username>doneathome</username>
+                    <password>doneathome</password>
+                    <path>/u01/experience/tomcat/</path>
                 </configuration>
             </plugin>
 

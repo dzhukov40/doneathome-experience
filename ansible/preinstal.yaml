@@ -13,6 +13,8 @@
 # пример запуска
 # [ ansible-playbook preinstal.yaml --extra-vars "target=192.168.56.11 remote_user=dzhukov" --ask-sudo-pass ]
 #
+# пример запуска DEBUG
+# [ ansible-playbook preinstal.yaml --extra-vars "target=192.168.56.11 remote_user=dzhukov DEBUG=true" --ask-sudo-pass ]
 #
 # (*) чтобы подключиться к [ mysql ] с другого ПК: [ mysql -h 192.168.56.11 -P 3306 -u mysql -p ]
 #     - отключаем фаервол [ sudo ufw disable ]
@@ -61,6 +63,10 @@
     tomcat_local_dir       : tomcat
     tomcat_distrib         : '{{local_dist}}/{{tomcat_local_dir}}/{{tomcat_distrib_name}}.tar.gz'
     tomcat_remote_dir      : '{{remote_dir}}/{{tomcat_local_dir}}'
+
+
+    DEBUG        : false
+
 
 
   tasks:
@@ -150,10 +156,53 @@
       copy: src={{scripts_distrib}} dest=/etc/init.d/{{script_name}} owner={{sw_user}} group={{sw_group}} mode="0755"
     - command: "update-rc.d {{script_name}} defaults"
 
-    - name: Start Searchwiz Coordinator Agent
+    # DEBUG
+    # Добавляем пользователя для работы плагина [ tomcat7-maven-plugin = 2.2 ]
+    # (*) заметь параметр [ insertbefore='</tomcat-users>' ] производить вставку перед этой строчкой
+    - name: adds string to [ ../tomcat/conf/tomcat-users.xml ]
+      lineinfile: dest=/u01/experience/tomcat/conf/tomcat-users.xml line="{{item.line}}" insertbefore='</tomcat-users>'
+      with_items:
+        - {line: '<role rolename="manager-gui"/>'}
+        - {line: '<role rolename="manager-script"/>'}
+        - {line: '<user username="{{sw_user}}" password="{{sw_user}}" roles="manager-qui, manager-script"/>'}
+      when: DEBUG == "true"
+
+    # DEBUG
+    # Создадим дерикторию
+    - name: create catalina dir
+      file: path=/u01/experience/tomcat/conf/Catalina/localhost/ state=directory owner={{sw_user}} group={{sw_group}} mode="0755" recurse=yes
+      when: DEBUG == "true"
+
+    # DEBUG
+    # Создадим файл
+    - name: create file
+      file: path=/u01/experience/tomcat/conf/Catalina/localhost/manager.xml state=touch owner={{sw_user}} group={{sw_group}} mode="0755"
+      when: DEBUG == "true"
+
+    # DEBUG
+    # Добавляем пользователя для работы плагина [ tomcat7-maven-plugin = 2.2 ]
+    - name: add lines to [ ../conf/Catalina/localhost/manager.xml ]
+      lineinfile: dest=/u01/experience/tomcat/conf/Catalina/localhost/manager.xml line="{{item.line}}"
+      with_items:
+        - {line: '<Context privileged="true" antiResourceLocking="false" docBase="${catalina.home}/webapps/manager">'}
+        - {line: '<Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="^.*$" />'}
+        - {line: '</Context>'}
+      when: DEBUG == "true"
+
+
+
+    - name: Start service
       command: "/etc/init.d/{{script_name}} start"
 
     - pause: seconds=1
+
+
+
+
+
+
+
+
 
 
 

@@ -1,32 +1,40 @@
 package doneathome.restSecond.model;
 
+import doneathome.restSecond.model.base.BaseEntity;
+
+import javax.persistence.*;
+
 /**
  * Created by dzhukov on 09.05.17.
  */
-public class User {
+@Entity
+@Table(name="User")
+public class User extends BaseEntity {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="user_id")
+    private Long id;
+
+    @Column(name="login")
     private String login;
-    private String password;
-    private int age;
 
-    // [ !!! класс должен иметь конструктор без параметров !!! ]
+    @Column(name="password")
+    private String password;
+
+    
     public User() {
     }
 
-    public User(int id, String login, String password, int age) {
-        this.id = id;
+    public User(String login, String password) {
         this.login = login;
         this.password = password;
-        this.age = age;
     }
 
-    public int getId() {
+    @Override
+    public Long getId() { return id; }
 
-        return id;
-    }
-
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -46,21 +54,12 @@ public class User {
         this.password = password;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
-                ", age=" + age +
                 '}';
     }
 }
