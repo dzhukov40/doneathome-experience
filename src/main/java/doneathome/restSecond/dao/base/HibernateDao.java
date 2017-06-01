@@ -5,10 +5,12 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by dzhukov on 01.06.17.
  */
+@Repository
 public abstract class HibernateDao<T extends BaseEntity> implements Dao<T> {
 
     @Autowired

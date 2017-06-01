@@ -2,21 +2,22 @@ SET NAMES utf8;
 
 #
 # Create tables
+# (*) название баз данных не желательно писать [camelCase]
 #
 
 USE {{db_name}};
 
 # порядок важен из-за вторичных ключей
-DROP TABLE IF EXISTS `Contact`;
-DROP TABLE IF EXISTS `Contact_relation`;
-DROP TABLE IF EXISTS `Message`;
-DROP TABLE IF EXISTS `User`;
+DROP TABLE IF EXISTS `CONTACT`;
+DROP TABLE IF EXISTS `CONTACT_RELATION`;
+DROP TABLE IF EXISTS `MESSAGE`;
+DROP TABLE IF EXISTS `USER`;
 
 #
-# Structure for table "User"
+# Structure for table "USER"
 #
 
-CREATE TABLE `User` (
+CREATE TABLE `USER` (
   `user_id` bigint NOT NULL AUTO_INCREMENT,
   `login` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
@@ -24,34 +25,34 @@ CREATE TABLE `User` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
-# Structure for table "Contact"
+# Structure for table "CONTACT"
 #
 
-CREATE TABLE `Contact` (
+CREATE TABLE `CONTACT` (
   `contact_id` bigint NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`contact_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
-# Structure for table "Contact_relations"
+# Structure for table "CONTACT_RELATION"
 #
 
-CREATE TABLE `Contact_relation` (
-  `Contact_relations_id` bigint NOT NULL AUTO_INCREMENT,
+CREATE TABLE `CONTACT_RELATION` (
+  `contact_relations_id` bigint NOT NULL AUTO_INCREMENT,
   `for_contact_id` bigint NOT NULL,
   `to_user_id` bigint NOT NULL,
-  PRIMARY KEY (`Contact_relations_id`),
+  PRIMARY KEY (`contact_relations_id`),
   KEY `for_contact_id` (`for_contact_id`),
   KEY `to_user_id` (`to_user_id`),
-  CONSTRAINT `FK_FOR_CONTACT` FOREIGN KEY (`for_contact_id`) REFERENCES `User` (`user_id`),
-  CONSTRAINT `FK_CONTACT_TO_USER` FOREIGN KEY (`to_user_id`) REFERENCES `User` (`user_id`)
+  CONSTRAINT `FK_FOR_CONTACT` FOREIGN KEY (`for_contact_id`) REFERENCES `CONTACT` (`contact_id`),
+  CONSTRAINT `FK_CONTACT_TO_USER` FOREIGN KEY (`to_user_id`) REFERENCES `USER` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
-# Structure for table "Message"
+# Structure for table "MESSAGE"
 #
 
-CREATE TABLE `Message` (
+CREATE TABLE `MESSAGE` (
   `message_id` bigint NOT NULL AUTO_INCREMENT,
   `from_user_id` bigint NOT NULL,
   `to_user_id` bigint NOT NULL,
@@ -60,7 +61,7 @@ CREATE TABLE `Message` (
   PRIMARY KEY (`message_id`),
   KEY `from_user_id` (`from_user_id`),
   KEY `to_user_id` (`to_user_id`),
-  CONSTRAINT `FK_MESSAGE_FROM_USER` FOREIGN KEY (`from_user_id`) REFERENCES `User` (`user_id`),
-  CONSTRAINT `FK_MESSAGE_TO_USER` FOREIGN KEY (`to_user_id`) REFERENCES `User` (`user_id`)
+  CONSTRAINT `FK_MESSAGE_FROM_USER` FOREIGN KEY (`from_user_id`) REFERENCES `USER` (`user_id`),
+  CONSTRAINT `FK_MESSAGE_TO_USER` FOREIGN KEY (`to_user_id`) REFERENCES `USER` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

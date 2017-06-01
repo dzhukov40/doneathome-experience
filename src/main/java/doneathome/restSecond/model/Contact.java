@@ -2,23 +2,24 @@ package doneathome.restSecond.model;
 
 import doneathome.restSecond.model.base.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by dzhukov on 27.05.17.
  */
 @Entity
-@Table(name="Contact")
+@Table(name="CONTACT")
 public class Contact extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="contact_id")
     private Long id;
-    private List<ContactRelation> contactRelations;
+
+    @OneToMany(mappedBy = "contact_id", cascade = CascadeType.ALL)
+    private Set<ContactRelation> contactRelations;
 
     @Override
     public Long getId() {
@@ -29,11 +30,11 @@ public class Contact extends BaseEntity {
         this.id = id;
     }
 
-    public List<ContactRelation> getContactRelations() {
+    public Set<ContactRelation> getContactRelations() {
         return contactRelations;
     }
 
-    public void setContactRelations(List<ContactRelation> contactRelations) {
+    public void setContactRelations(Set<ContactRelation> contactRelations) {
         this.contactRelations = contactRelations;
     }
 

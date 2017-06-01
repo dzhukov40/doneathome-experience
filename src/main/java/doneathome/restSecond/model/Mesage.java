@@ -2,22 +2,31 @@ package doneathome.restSecond.model;
 
 import doneathome.restSecond.model.base.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * Created by dzhukov on 27.05.17.
  */
 @Entity
-@Table(name="Message")
+@Table(name="MESSAGE")
 public class Mesage extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="message_id")
     private Long id;
+
+    @Column(name="from_user_id")
     private Long fromUserId;
+
+    @Column(name="to_user_id")
     private Long toUserId;
+
+    @Column(name="text_message")
     private String message;
+
+    @Column(name="send_time")
     private Date sendTime;
 
 

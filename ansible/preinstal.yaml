@@ -16,7 +16,9 @@
 # пример запуска DEBUG
 # [ ansible-playbook preinstal.yaml --extra-vars "target=192.168.56.11 remote_user=dzhukov DEBUG=true" --ask-sudo-pass ]
 #
-# (*) чтобы подключиться к [ mysql ] с другого ПК: [ mysql -h 192.168.56.11 -P 3306 -u mysql -p ]
+#
+# (*) зайти как [root] c локального ПК: [ sudo mysql -u root -p ]
+# (*) чтобы подключиться к [ mysql ] с другого ПК: [ mysql -h 192.168.56.11 -P 3306 -u <db_user> -p ]
 #     - отключаем фаервол [ sudo ufw disable ]
 #     - редактируем [ /etc/mysql/mysql.conf.d/mysqld.cnf ]
 #       [ bind-address            = 0.0.0.0 ]
@@ -41,11 +43,14 @@
     db_name       : experiense
     db_user       : doneathome
     # https://www.browserling.com/tools/mysql-password
-    db_pass       : "*585FB28CC24859155CFC19B30FD51EC3F8E31BCA"
+    # password -> [ doneathome ]
+    db_pass       : "*8D1EDF83EE541A203B02D5B107CF50106E65ADB2"
     db_host       : localhost
     db_port       : 3306
     db_root_user  : root
     db_root_pass  :
+    db_ALL_REMOVE : false    # удалять ли Mysql
+
 
     local_dir            : ./
     remote_dir           : /u01/experience
@@ -112,18 +117,40 @@
         name: openjdk-8-jre
         state: latest
 
+    # db_ALL_REMOVE
+    # удаляем [ mysql-server ]
+    - name: remove mysql-server*
+      apt:
+        name: mysql-server*
+        state: absent
+      when: db_ALL_REMOVE == "true"
+
+    - name: remove /var/lib/mysql*
+      file:
+        state: absent
+        path: "{{item.path}}"
+      with_items:
+        - {path: '/var/lib/mysql'}
+        - {path: '/var/lib/mysql-files'}
+        - {path: '/var/lib/mysql-keyring'}
+        - {path: '/var/lib/mysql-upgrade'}
+      when: db_ALL_REMOVE == "true"
+
+
+    # устанавливаем [ python-mysqldb ]
+    # (*) не работало добавление пользователя для БД
+    # (*) не работало создание и запуск демона [mysqld]
+    - name: install python mysql bindings
+      apt:
+        name: python-mysqldb
+        update_cache: yes
+        state: latest
+
     # устанавливаем [ mysql-server ]
     - name: install mysql-server
       apt:
         name: mysql-server
         state: latest
-
-    # устанавливаем [ python-mysqldb ] (*) не работало добавление пользователя для БД
-    - name: install python mysql bindings
-      apt:
-        name: python-mysqldb
-        state: latest
-
 
     # добавляем пользователя
     - mysql_user:
@@ -189,7 +216,12 @@
         - {line: '</Context>'}
       when: DEBUG == "true"
 
-
+    # DEBUG
+    # Поменяем строчку в файле [ /u01/experience/tomcat/bin/catalina.sh ]
+    # TODO: убрать IP захардкоженый
+    - name: chenge line in catalina.sh
+      lineinfile: dest=/u01/experience/tomcat/bin/catalina.sh regexp='JPDA_ADDRESS=' line='    JPDA_ADDRESS="192.168.56.11:8000"' state=present
+      when: DEBUG == "true"
 
     - name: Start service
       command: "/etc/init.d/{{script_name}} start"

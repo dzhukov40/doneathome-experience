@@ -2,28 +2,29 @@ package doneathome.restSecond.model;
 
 import doneathome.restSecond.model.base.BaseEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by dzhukov on 30.05.17.
  */
 @Entity
-@Table(name="Contact_relation")
+@Table(name="CONTACT_RELATION")
 public class ContactRelation extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="contact_relations_id")
     private Long id;
+
+    @Column(name="contact_id")
     private Long contact_id;
-    private Long user_id;
 
 
     public ContactRelation() {
     }
 
-    public ContactRelation(Long contact_id, Long user_id) {
+    public ContactRelation(Long contact_id) {
         this.contact_id = contact_id;
-        this.user_id = user_id;
     }
 
     @Id
@@ -44,20 +45,11 @@ public class ContactRelation extends BaseEntity {
         this.contact_id = contact_id;
     }
 
-    public Long getUser_id() {
-        return user_id;
-    }
-
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
-    }
-
     @Override
     public String toString() {
         return "ContactRelation{" +
                 "id=" + id +
                 ", contact_id=" + contact_id +
-                ", user_id=" + user_id +
                 '}';
     }
 

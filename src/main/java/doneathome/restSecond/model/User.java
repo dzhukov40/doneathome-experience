@@ -8,11 +8,11 @@ import javax.persistence.*;
  * Created by dzhukov on 09.05.17.
  */
 @Entity
-@Table(name="User")
+@Table(name="USER")
 public class User extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="user_id")
     private Long id;
 
