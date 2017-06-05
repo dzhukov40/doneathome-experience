@@ -223,6 +223,16 @@
       lineinfile: dest=/u01/experience/tomcat/bin/catalina.sh regexp='JPDA_ADDRESS=' line='    JPDA_ADDRESS="192.168.56.11:8000"' state=present
       when: DEBUG == "true"
 
+    # DEBUG
+    # Поменяем строчку в файле [ /etc/init.d/doneathome-experience ]
+    # Два раза, так-как меняется только последняя строчка
+    - name: chenge line in doneathome-experience
+      lineinfile: dest=/etc/init.d/doneathome-experience regexp='{{item.line}}' line='    sudo -u $RUNAS sh -c "$CATALINA_HOME/bin/catalina.sh jpda start"' state=present
+      with_items:
+        - {line: 'catalina.sh start"'}
+        - {line: 'catalina.sh start"'}
+      when: DEBUG == "true"
+
     - name: Start service
       command: "/etc/init.d/{{script_name}} start"
 

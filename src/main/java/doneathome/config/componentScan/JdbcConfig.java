@@ -66,7 +66,7 @@ public class JdbcConfig {
      * @return
      */
     @Bean
-    public LocalSessionFactoryBean getSessionFactory() {
+    public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(getDataSource());
         // если вы хотите использовать какой-то класс для связи с какой-то таблицей, вы должны его здесь указать.

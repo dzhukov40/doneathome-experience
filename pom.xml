@@ -18,6 +18,7 @@
         <jackson.v>2.8.7</jackson.v>
         <jstl.v>1.2</jstl.v>
 
+        <!--http://docs.jboss.org/hibernate/orm/5.2/quickstart/html_single/-->
         <hiber.v>5.2.10.Final</hiber.v>
         <mysql.v>6.0.6</mysql.v>
 

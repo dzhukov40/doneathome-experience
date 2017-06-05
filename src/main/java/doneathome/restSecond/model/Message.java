@@ -10,7 +10,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name="MESSAGE")
-public class Mesage extends BaseEntity {
+public class Message extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -30,17 +30,16 @@ public class Mesage extends BaseEntity {
     private Date sendTime;
 
 
-    public Mesage() {
+    public Message() {
     }
 
-    public Mesage(Long fromUserId, Long toUserId, String message) {
+    public Message(Long fromUserId, Long toUserId, String message) {
 
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.message = message;
     }
 
-    @Id
     @Override
     public Long getId() {
         return id;
@@ -84,7 +83,7 @@ public class Mesage extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Mesage{" +
+        return "Message{" +
                 "id=" + id +
                 ", fromUserId=" + fromUserId +
                 ", toUserId=" + toUserId +
@@ -92,4 +91,5 @@ public class Mesage extends BaseEntity {
                 ", sendTime=" + sendTime +
                 '}';
     }
+
 }

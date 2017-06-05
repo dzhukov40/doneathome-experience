@@ -21,6 +21,13 @@ public class Contact extends BaseEntity {
     @OneToMany(mappedBy = "contact_id", cascade = CascadeType.ALL)
     private Set<ContactRelation> contactRelations;
 
+    public Contact() {
+    }
+
+    public Contact(Set<ContactRelation> contactRelations) {
+        this.contactRelations = contactRelations;
+    }
+
     @Override
     public Long getId() {
         return id;

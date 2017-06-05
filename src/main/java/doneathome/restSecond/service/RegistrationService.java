@@ -17,10 +17,9 @@ public class RegistrationService {
 
 
     public Status registration(User user) {
-        Status status = new Status();
-        status.setMessage( userDao.save(user).toString() );
 
-        return status;
+
+        return new Status();
     }
 
     public Status logIn(User user){

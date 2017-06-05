@@ -27,7 +27,6 @@ public class ContactRelation extends BaseEntity {
         this.contact_id = contact_id;
     }
 
-    @Id
     @Override
     public Long getId() {
         return id;
