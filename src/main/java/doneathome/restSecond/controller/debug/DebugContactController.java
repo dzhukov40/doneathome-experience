@@ -46,7 +46,16 @@ public class DebugContactController {
 
     @RequestMapping(value = SAVE_OR_UPDATE, method = RequestMethod.POST)
     public void saveOrUpdateUser(@RequestBody Contact contact) {
-        contactDao.saveOrUpdate(contact);
+        Contact contactLocal = new Contact();
+        Set<ContactRelation>contactRelationSet = new HashSet<>();
+
+        for (ContactRelation contactRelation : contact.getContactRelations()) {
+            contactRelation.setContact(contactLocal);
+            contactRelationSet.add(contactRelation);
+        }
+
+        contactLocal.setContactRelations(contactRelationSet);
+        contactDao.saveOrUpdate(contactLocal);
     }
 
     @RequestMapping(value = SAVE, method = RequestMethod.POST)

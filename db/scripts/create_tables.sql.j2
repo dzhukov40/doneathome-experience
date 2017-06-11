@@ -39,13 +39,13 @@ CREATE TABLE `CONTACT` (
 
 CREATE TABLE `CONTACT_RELATION` (
   `contact_relations_id` bigint NOT NULL AUTO_INCREMENT,
-  `for_contact_id` bigint NOT NULL,
-  `to_user_id` bigint NOT NULL,
+  `contact_id` bigint NOT NULL,
+  `user_id` bigint NOT NULL,
   PRIMARY KEY (`contact_relations_id`),
-  KEY `for_contact_id` (`for_contact_id`),
-  KEY `to_user_id` (`to_user_id`),
-  CONSTRAINT `FK_FOR_CONTACT` FOREIGN KEY (`for_contact_id`) REFERENCES `CONTACT` (`contact_id`),
-  CONSTRAINT `FK_CONTACT_TO_USER` FOREIGN KEY (`to_user_id`) REFERENCES `USER` (`user_id`)
+  KEY `for_contact_id` (`contact_id`),
+  KEY `to_user_id` (`user_id`),
+  CONSTRAINT `FK_FOR_CONTACT` FOREIGN KEY (`contact_id`) REFERENCES `CONTACT` (`contact_id`),
+  CONSTRAINT `FK_CONTACT_TO_USER` FOREIGN KEY (`user_id`) REFERENCES `USER` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 #
@@ -54,8 +54,8 @@ CREATE TABLE `CONTACT_RELATION` (
 
 CREATE TABLE `MESSAGE` (
   `message_id` bigint NOT NULL AUTO_INCREMENT,
-  `from_user_id` bigint NOT NULL,
-  `to_user_id` bigint NOT NULL,
+  `from_user_id` bigint DEFAULT NULL,
+  `to_user_id` bigint DEFAULT NULL,
   `text_message` text,
   `send_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`message_id`),

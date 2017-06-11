@@ -7,7 +7,7 @@
   - определяет рабочую единицу, способную оправлять/получат
 
 [Contact]: (id)
-  [Relations]: (id, contact_id, user_id)
+  [Relations]: (id, for_contact_id, user_id)
     - суть в том, что контакт один, который состоит из списка участников
 
 [Message]: (id, id_user, id_contact, text, time)

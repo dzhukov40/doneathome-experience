@@ -18,7 +18,7 @@ public class Contact extends BaseEntity {
     @Column(name="contact_id")
     private Long id;
 
-    @OneToMany(mappedBy = "contact_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL)
     private Set<ContactRelation> contactRelations;
 
     public Contact() {
@@ -35,6 +35,11 @@ public class Contact extends BaseEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void addToContactRelations(ContactRelation contactRelation) {
+        contactRelation.setContact(this);
+        this.contactRelations.add(contactRelation);
     }
 
     public Set<ContactRelation> getContactRelations() {

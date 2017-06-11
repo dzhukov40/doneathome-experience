@@ -16,15 +16,25 @@ public class ContactRelation extends BaseEntity {
     @Column(name="contact_relations_id")
     private Long id;
 
-    @Column(name="contact_id")
-    private Long contact_id;
+    /**
+     * преподаватель не владеет связью и поэтому указано
+     * свойство mappedBy=teacher, которое указывает на
+     * название поля в дочернем классе, которое представляет
+     * текущую сущность(в нашем случае это будет Teacher).
+     */
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "contact_id")
+    private Contact contact;
+
+    @Column(name="user_id")
+    private Long userId;
 
 
     public ContactRelation() {
     }
 
-    public ContactRelation(Long contact_id) {
-        this.contact_id = contact_id;
+    public ContactRelation(Long userId) {
+        this.userId = userId;
     }
 
     @Override
@@ -36,19 +46,28 @@ public class ContactRelation extends BaseEntity {
         this.id = id;
     }
 
-    public Long getContact_id() {
-        return contact_id;
+    public Contact getContact() {
+        return contact;
     }
 
-    public void setContact_id(Long contact_id) {
-        this.contact_id = contact_id;
+    public void setContact(Contact contact) {
+        this.contact = contact;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override
     public String toString() {
         return "ContactRelation{" +
                 "id=" + id +
-                ", contact_id=" + contact_id +
+                ", contact=" + contact +
+                ", userId=" + userId +
                 '}';
     }
 
