@@ -8,8 +8,13 @@
     <artifactId>experience</artifactId>
     <version>1.0</version>
 
+    <name>experience: root</name>
+
     <!-- набор наших переменных -->
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
 
         <jdk.v>1.8</jdk.v>
         <spring.v>4.3.7.RELEASE</spring.v>
